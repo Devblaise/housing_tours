@@ -1,33 +1,22 @@
-const fs = require("fs");
+const tourRouter = require("./starter/routes/tourRoutes");
+const userRouter = require("./starter/routes/userRoutes");
 const express = require("express");
-const path = require("path");
+const morgan = require("morgan");
 
 const app = express();
 
-const tours = JSON.parse(
-  fs.readFileSync(
-    path.join(
-      `${__dirname}`,
-      "starter",
-      "dev-data",
-      "data",
-      "tours-simple.json"
-    )
-  )
-);
+//Middlewares
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
-// console.log(tours);
+app.use(express.json());
 
-app.get("api/v1/tours", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      tours
-    }
-  });
-});
+app.use(express.static("./starter/public"));
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`App listening on port ${3000}!`);
-});
+//Routes
+
+app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
+
+module.exports = app;
